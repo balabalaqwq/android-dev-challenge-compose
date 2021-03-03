@@ -15,17 +15,32 @@
  */
 package com.example.androiddevchallenge
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.androiddevchallenge.model.Cat
 import com.example.androiddevchallenge.ui.theme.MyTheme
 
 class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -39,23 +54,110 @@ class MainActivity : AppCompatActivity() {
 // Start building your app here!
 @Composable
 fun MyApp() {
-    Surface(color = MaterialTheme.colors.background) {
-        Text(text = "Ready... Set... GO!")
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Cats Nest",
+                    )
+                },
+                backgroundColor = Color.Transparent, elevation = 0.dp
+            )
+        }
+    ) {
+
+        val catList = mutableListOf<Cat>()
+        catList.add(
+            Cat(
+                "Iwe",
+                R.drawable.iwe,
+                description = "girl, 2, like: ball、watch TV",
+                isAdopted = false
+            )
+        )
+        catList.add(
+            Cat(
+                "Kis",
+                R.drawable.kis,
+                description = "girl, 1, like: rua、watch TV",
+                isAdopted = false
+            )
+        )
+        catList.add(
+            Cat(
+                "Oer",
+                R.drawable.oer,
+                description = "boy, 1, like: ball、watch TV",
+                isAdopted = false
+            )
+        )
+        catList.add(
+            Cat(
+                "Pex",
+                R.drawable.pex,
+                description = "boy, 3, like: ball、watch TV",
+                isAdopted = false
+            )
+        )
+        catList.add(
+            Cat(
+                "Ses",
+                R.drawable.ses,
+                description = "girl, 2, like: ball、watch TV",
+                isAdopted = false
+            )
+        )
+        LazyColumn {
+            items(catList, ({
+                it.toString()
+            }), itemContent = {
+                CatItem(it)
+            })
+        }
     }
 }
 
-@Preview("Light Theme", widthDp = 360, heightDp = 640)
 @Composable
-fun LightPreview() {
-    MyTheme {
-        MyApp()
-    }
-}
-
-@Preview("Dark Theme", widthDp = 360, heightDp = 640)
-@Composable
-fun DarkPreview() {
-    MyTheme(darkTheme = true) {
-        MyApp()
+fun CatItem(cat: Cat) {
+    val image = painterResource(id = cat.picture)
+    val context = LocalContext.current
+    Card(
+        elevation = 4.dp,
+        shape = RoundedCornerShape(4.dp),
+        modifier = Modifier
+            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
+            .fillMaxWidth()
+            .requiredHeight(220.dp)
+            .clickable {
+                val intent = Intent(context, CatDetailActivity::class.java)
+                intent.putExtra("cat", cat)
+                context.startActivity(intent)
+            }
+    ) {
+        Image(
+            painter = image,
+            contentDescription = cat.name,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(shape = RoundedCornerShape(8.dp)),
+            contentScale = ContentScale.Crop
+        )
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Bottom
+        ) {
+            Surface(
+                color = Color.Transparent,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "Adopted:" + cat.isAdopted.toString(),
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+        }
     }
 }
